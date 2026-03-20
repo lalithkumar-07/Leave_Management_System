@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Faculty Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='chart.min.js') }}"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dashboard-container {
+      background: #fff;
+      width: 90%;
+      max-width: 1100px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      padding: 40px 50px;
+      margin: 40px 0;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    h2 {
+      text-align: center;
+      font-family: 'Pacifico', cursive;
+      color: #5a3ea0;
+      font-size: 2.2em;
+      margin-bottom: 15px;
+    }
+
+    .balance {
+      display: block;
+      text-align: center;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      color: white;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 10px 20px;
+      width: fit-content;
+      margin: 0 auto 35px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      max-width: 480px;
+      margin: 0 auto 40px;
+      background: #f9f9ff;
+      border-radius: 15px;
+      padding: 30px 40px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    form input {
+      width: 100%;
+      margin-bottom: 14px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.2s ease;
+    }
+
+    form input:focus {
+      border-color: #667eea;
+      outline: none;
+      background: #f1f3ff;
+    }
+
+    button {
+      width: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.03);
+      background: linear-gradient(90deg, #5a3ea0, #667eea);
+    }
+
+    h3 {
+      text-align: center;
+      color: #5a3ea0;
+      font-size: 1.8em;
+      margin-top: 40px;
+      margin-bottom: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 14px 18px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f4f6ff;
+    }
+
+    a {
+      color: #5a3ea0;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .logout {
+      display: block;
+      width: fit-content;
+      margin: 30px auto 0;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .logout:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #764ba2, #667eea);
+    }
+
+    .message {
+      text-align: center;
+      color: green;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dashboard-container">
+    <h2>Welcome, {{ user.username }} (Faculty)</h2>
+
+    <span class="balance">Available Leave Balance: {{ leave_balance }}</span>
+
+    <form method="post" action="{{ url_for('apply_leave') }}">
+      <input name="leave_type" placeholder="Leave Type" required>
+      <input name="start_date" type="date" placeholder="Start Date" required>
+      <input name="end_date" type="date" placeholder="End Date" required>
+      <input name="days" type="number" placeholder="Days" required>
+      <input name="reason" placeholder="Reason" required>
+      <button type="submit">Apply Leave</button>
+    </form>
+
+    <h3>My Leaves</h3>
+    <table>
+      <tr>
+        <th>Type</th>
+        <th>Dates</th>
+        <th>Days</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      {% for l in leaves %}
+      <tr>
+        <td>{{ l.leave_type }}</td>
+        <td>{{ l.start_date }} → {{ l.end_date }}</td>
+        <td>{{ l.days }}</td>
+        <td>{{ l.reason }}</td>
+        <td>{{ l.status }}</td>
+        <td>
+          {% if l.status == 'Pending' %}
+          <a href="{{ url_for('edit_leave', leave_id=l.id) }}">Modify</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+
+    {% for m in get_flashed_messages() %}
+      <p class="message">{{ m }}</p>
+    {% endfor %}
+  </div>
+</body>
+</html>

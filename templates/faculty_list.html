@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Faculty List</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <h2>👩‍🏫 Faculty Members</h2>
+  <div class="top-links">
+    <a href="{{ url_for('dashboard_hod') }}">⬅ Back to Dashboard</a>
+    <a href="{{ url_for('logout') }}" style="background:#ff5252;">🚪 Logout</a>
+  </div>
+
+  <div class="container">
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Available Leaves</th>
+        <th>Profile</th>
+      </tr>
+      {% for f in faculty_members %}
+      <tr>
+        <td>{{ f.id }}</td>
+        <td>{{ f.username }}</td>
+        <td>{{ f.role }}</td>
+        <td>{{ f.leave_balance }}</td>
+        <td><a href="{{ url_for('faculty_detail', faculty_id=f.id) }}" class="btn">View Details</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+</body>
+</html>

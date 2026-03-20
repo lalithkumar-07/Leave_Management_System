@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ faculty.username }} - Faculty Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      text-align: center;
+      color: #555;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin: 20px 0;
+    }
+
+    .stat-box {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 15px 25px;
+      text-align: center;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    }
+
+    .stat-box h4 {
+      margin: 5px 0;
+      color: #555;
+      font-size: 15px;
+    }
+
+    .stat-box p {
+      font-size: 22px;
+      color: #222;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 420px;
+      margin: 40px auto;
+    }
+
+    .charts {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>👩‍🏫 Faculty Profile: {{ faculty.username }}</h2>
+
+    <!-- 📊 Display numeric summary -->
+    <div class="stats">
+      <div class="stat-box" style="border-top: 5px solid #42a5f5;">
+        <h4>Leaves Taken</h4>
+        <p id="leavesTakenDisplay"></p>
+      </div>
+      <div class="stat-box" style="border-top: 5px solid #66bb6a;">
+        <h4>Leaves Left</h4>
+        <p id="leavesLeftDisplay"></p>
+      </div>
+    </div>
+
+    <h3>📈 Leave Summary Overview</h3>
+
+    <div class="charts">
+      <div class="chart-container">
+        <canvas id="leaveSummaryChart"></canvas>
+      </div>
+      <div class="chart-container" style="max-width: 380px;">
+        <canvas id="leaveTypeChart"></canvas>
+      </div>
+    </div>
+
+    <h3>📋 Leave History</h3>
+    {% if leaves %}
+    <table>
+      <tr>
+        <th>Leave Type</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Days</th>
+        <th>Reason</th>
+        <th>Status</th>
+      </tr>
+      {% for l in leaves %}
+      <tr>
+        <td>{{ l.leave_type }}</td>
+        <td>{{ l.start_date }}</td>
+        <td>{{ l.end_date }}</td>
+        <td>{{ l.days }}</td>
+        <td>{{ l.reason }}</td>
+        <td>{{ l.status }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p style="text-align:center; color:#666;">No leaves applied yet.</p>
+    {% endif %}
+
+    <a class="back-link" href="{{ url_for('faculty_list') }}">← Back to Faculty List</a>
+  </div>
+
+  <script>
+    // 📊 Bar chart for leaves taken vs left
+    const totalLeaves = 15;
+    const leavesLeft = {{ faculty.leave_balance }};
+    const leavesTaken = totalLeaves - leavesLeft;
+
+    document.getElementById('leavesTakenDisplay').textContent = leavesTaken;
+    document.getElementById('leavesLeftDisplay').textContent = leavesLeft;
+
+    const ctx1 = document.getElementById('leaveSummaryChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: ['Leaves Taken', 'Leaves Left'],
+        datasets: [{
+          label: 'Number of Leaves',
+          data: [leavesTaken, leavesLeft],
+          backgroundColor: ['#42a5f5', '#66bb6a'],
+          borderColor: ['#1e88e5', '#388e3c'],
+          borderWidth: 1,
+          borderRadius: 8,
+          hoverBackgroundColor: ['#64b5f6', '#81c784']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Leaves Taken vs Leaves Left',
+            font: { size: 18, weight: 'bold' },
+            color: '#333'
+          },
+          tooltip: {
+            backgroundColor: '#333',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            cornerRadius: 6
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: totalLeaves,
+            title: { display: true, text: 'Total Leaves', color: '#555' },
+            grid: { color: '#e0e0e0' },
+            ticks: { stepSize: 1 }
+          },
+          x: {
+            title: { display: true, text: 'Leave Category', color: '#555' },
+            grid: { display: false }
+          }
+        },
+        animation: { duration: 1200, easing: 'easeOutBounce' }
+      }
+    });
+
+    // 🍩 Doughnut chart for leave type distribution
+    const ctx2 = document.getElementById('leaveTypeChart').getContext('2d');
+    const chartData = {{ chart_data|tojson }};
+    new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          data: chartData.values,
+          backgroundColor: ['#42a5f5', '#66bb6a', '#ffa726', '#ab47bc', '#ef5350'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          title: {
+            display: true,
+            text: 'Leave Types Distribution',
+            font: { size: 16, weight: 'bold' },
+            color: '#333'
+          }
+        },
+        animation: { duration: 1000, easing: 'easeInOutCubic' }
+      }
+    });
+  </script>
+
+</body>
+</html>

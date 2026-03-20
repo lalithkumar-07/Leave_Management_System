@@ -1,0 +1,55 @@
+# ========================
+# 🧠 Core Flask Framework
+# ========================
+Flask==3.0.3
+Werkzeug==3.0.3
+Jinja2==3.1.4
+itsdangerous==2.2.0
+MarkupSafe==2.1.5
+click==8.1.7
+
+# ========================
+# 🗃️ Database & ORM
+# ========================
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy==2.0.36
+Flask-Migrate==4.0.7
+alembic==1.13.3
+
+# ========================
+# 🔐 Authentication & Forms
+# ========================
+Flask-Login==0.6.3
+Flask-WTF==1.2.2
+email-validator==2.2.0
+WTForms==3.1.2
+
+# ========================
+# ⏰ Date & Time Handling
+# ========================
+python-dateutil==2.9.0.post0
+
+# ========================
+# 📊 Data Visualization
+# (Chart.js is frontend JS, but we include matplotlib/pandas for analytics)
+# ========================
+matplotlib==3.9.2
+pandas==2.2.3
+
+# ========================
+# ⚙️ Utility & System Tools
+# ========================
+python-dotenv==1.0.1
+
+# ========================
+# 💾 File & Backup Utilities
+# (Useful for data export/import or backups)
+# ========================
+openpyxl==3.1.5
+xlrd==2.0.1
+
+# ========================
+# 🧪 Testing (optional but recommended)
+# ========================
+pytest==8.3.3
+coverage==7.6.3

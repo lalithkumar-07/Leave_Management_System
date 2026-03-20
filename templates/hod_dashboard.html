@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HOD Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .action-buttons {
+      text-align: center;
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .btn-backup, .btn-delete {
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-backup {
+      background-color: #1976d2;
+      color: white;
+    }
+    .btn-backup:hover {
+      background-color: #1565c0;
+    }
+
+    .btn-delete {
+      background-color: #e53935;
+      color: white;
+    }
+    .btn-delete:hover {
+      background-color: #c62828;
+    }
+
+    .container {
+      margin-top: 30px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    .flash-msg {
+      text-align: center;
+      background: #d1e7dd;
+      color: #0f5132;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+
+    .top-links {
+      text-align: right;
+      margin: 15px;
+    }
+
+    .top-links a {
+      background: #1976d2;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin-left: 8px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .top-links a:hover {
+      background: #1565c0;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2, h3 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-links">
+    <a href="{{ url_for('register_user') }}">➕ Add Faculty / HOD</a>
+    <a href="{{ url_for('faculty_list') }}">👩‍🏫 View All Faculty</a>
+    <a href="{{ url_for('logout') }}" style="background:#ff5252;">🚪 Logout</a>
+  </div>
+
+  <h2>Welcome, {{ user.username }} (HOD)</h2>
+
+  <!-- ✅ Overall Leave Summary Chart -->
+  <div class="container">
+    <h3>📊 Overall Leave Status Summary</h3>
+    <canvas id="summaryChart"></canvas>
+  </div>
+
+  <div class="container">
+    <h3>📋 Pending Leave Requests</h3>
+
+    {% if leaves %}
+    <table>
+      <tr>
+        <th>Faculty</th>
+        <th>Type</th>
+        <th>Dates</th>
+        <th>Days</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      {% for l in leaves %}
+      <tr>
+        <td>{{ l.user_id }}</td>
+        <td>{{ l.leave_type }}</td>
+        <td>{{ l.start_date }} → {{ l.end_date }}</td>
+        <td>{{ l.days }}</td>
+        <td>{{ l.reason }}</td>
+        <td>{{ l.status }}</td>
+        <td>
+          <div class="btn-container">
+            <a class="btn btn-approve" href="{{ url_for('leave_action', leave_id=l.id, action='approve') }}">Approve</a>
+            <a class="btn btn-reject" href="{{ url_for('leave_action', leave_id=l.id, action='reject') }}">Reject</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p style="text-align:center; color:#555;">No pending leave requests 🎉</p>
+    {% endif %}
+
+    {% for m in get_flashed_messages() %}
+    <p class="flash-msg">{{ m }}</p>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ Action Buttons (Backup + Delete) -->
+  <div class="action-buttons">
+    <form method="POST" action="{{ url_for('backup_data') }}">
+      <button type="submit" class="btn-backup" onclick="return confirm('💾 Do you want to create a database backup?');">
+        💾 Backup Faculty Leave Data
+      </button>
+    </form>
+
+    <form method="POST" action="{{ url_for('delete_all_data') }}">
+      <button type="submit" class="btn-delete" onclick="return confirm('⚠️ Are you sure you want to delete ALL faculty and leave data? This action cannot be undone.');">
+        🗑️ Delete All Faculty & Leave Data
+      </button>
+    </form>
+  </div>
+
+  <!-- ✅ Chart.js Script -->
+  <script>
+    const ctx = document.getElementById('summaryChart').getContext('2d');
+    const chartData = {{ chart_data | tojson }};
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          label: 'Number of Leaves',
+          data: chartData.values,
+          backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Leave Distribution (Approved / Pending / Rejected)',
+            font: { size: 16 }
+          },
+          legend: { display: false }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Leave Status' } },
+          y: { 
+            title: { display: true, text: 'Count' },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

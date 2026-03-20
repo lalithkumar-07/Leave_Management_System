@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Faculty Portal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Background gradient inspired by Educatumy */
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #6D7BF3, #8F9BEA);
+      font-family: "Inter", "Segoe UI", sans-serif;
+    }
+
+    /* Compact card container */
+    .register-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 40px 35px;
+      box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .register-card::before {
+      content: "";
+      position: absolute;
+      top: -60px;
+      left: -60px;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle at center, #8F9BEA 0%, #6D7BF3 80%);
+      opacity: 0.15;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    /* Title */
+    .register-card h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 22px;
+      color: #1d3557;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Inputs and Select */
+    .register-card input,
+    .register-card select {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      background: #f4f6fa;
+      font-size: 15px;
+      transition: 0.3s;
+      z-index: 1;
+      position: relative;
+    }
+
+    .register-card input:focus,
+    .register-card select:focus {
+      outline: none;
+      background: #e9eef9;
+      transform: scale(1.03);
+      box-shadow: 0 0 10px rgba(109, 123, 243, 0.25);
+    }
+
+    /* Button */
+    .register-card button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6D7BF3, #8F9BEA);
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 8px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .register-card button:hover {
+      background: linear-gradient(135deg, #8F9BEA, #6D7BF3);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Link */
+    .register-card p {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #555;
+      z-index: 1;
+      position: relative;
+    }
+
+    .register-card a {
+      color: #6D7BF3;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .register-card a:hover {
+      color: #4a5be8;
+      text-decoration: underline;
+    }
+
+    /* Flash message */
+    .flash {
+      margin-top: 12px;
+      color: #2e8b57;
+      background: rgba(46, 139, 87, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 500;
+      z-index: 1;
+      position: relative;
+    }
+
+    /* Floating animation */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+      100% { transform: translateY(0px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-card">
+    <h2>Create Your Account ✨</h2>
+
+    <form method="post">
+      <input name="username" placeholder="Username" required>
+      <input name="password" type="password" placeholder="Password" required>
+      <select name="role" required>
+        <option value="">Select Role</option>
+        <option value="faculty">Faculty</option>
+        <option value="hod">HOD</option>
+      </select>
+      <button type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? 
+      <a href="{{ url_for('login') }}">Login here</a>
+    </p>
+
+    {% for m in get_flashed_messages() %}
+      <p class="flash">{{ m }}</p>
+    {% endfor %}
+  </div>
+
+</body>
+</html>

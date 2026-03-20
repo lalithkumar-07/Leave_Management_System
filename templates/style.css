@@ -1,0 +1,104 @@
+body {
+    background-color: #f0f4fa; /* Light blue background, choose your favorite color */
+    background-image: url('/static/s4.jpg'); /* Add your image in the static folder */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+.container {
+    background: rgba(255,255,255,0.95);  /* Semi-transparent white for foreground readability */
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+h2 , h3 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+form {
+  margin-bottom: 32px;
+}
+input, select, button {
+  font-size: 16px;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  border: 1px solid #b6c3cd;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+input:focus, select:focus {
+  border-color: #217dbb;
+  outline: none;
+  background: #f0f8ff;
+}
+button {
+  background: #217dbb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 96px;
+  transition: background .2s;
+}
+button:hover {
+  background: #174877;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+th, td {
+  padding: 10px 12px;
+  border: 1px solid #e3e8ee;
+}
+th {
+  background: #eef5fa;
+  color: #17699c;
+  font-weight: 600;
+}
+tr:nth-child(even) {
+  background: #f9fcff;
+}
+.status-approved {
+  color: #239b56;
+  font-weight: bold;
+}
+.status-rejected {
+  color: #cb2323;
+  font-weight: bold;
+}
+.status-pending {
+  color: #b7950b;
+  font-weight: bold;
+}
+.flash-message {
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 7px;
+  background: #eaf6fc;
+  color: #17699c;
+  font-weight: bold;
+  text-align: center;
+}
+a {
+  color: #217dbb;
+  text-decoration: none;
+  margin-right: 25px;
+  font-weight: 500;
+}
+a:hover {
+  text-decoration: underline;
+}
+hr {
+  border: none;
+  border-top: 1px solid #d5e6f0;
+  margin: 20px 0;
+}

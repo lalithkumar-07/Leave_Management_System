@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Leave Request</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <h2>Edit Leave Request</h2>
+
+    {% for m in get_flashed_messages() %}
+      <p class="flash-msg">{{ m }}</p>
+    {% endfor %}
+
+    <form method="POST">
+      <label>Leave Type:</label>
+      <input type="text" name="leave_type" value="{{ leave.leave_type }}" required>
+
+      <label>Start Date:</label>
+      <input type="date" name="start_date" value="{{ leave.start_date }}" required>
+
+      <label>End Date:</label>
+      <input type="date" name="end_date" value="{{ leave.end_date }}" required>
+
+      <label>Days:</label>
+      <input type="number" name="days" value="{{ leave.days }}" min="1" required>
+
+      <label>Reason:</label>
+      <textarea name="reason" required>{{ leave.reason }}</textarea>
+
+      <button type="submit">💾 Update Leave</button>
+    </form>
+
+    <a class="back-link" href="{{ url_for('dashboard_faculty') }}">← Back to Dashboard</a>
+  </div>
+
+</body>
+</html>
